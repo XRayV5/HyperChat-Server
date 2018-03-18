@@ -5,8 +5,7 @@ const config = require("./config");
 module.exports = function(server) {
   const ioServer = sio(server);
 
-  ioServer.set(
-    "authorization",
+  ioServer.use(
     socketioJwt.authorize({
       secret: config.secret,
       handshake: true
@@ -15,6 +14,9 @@ module.exports = function(server) {
 
   ioServer.on("connection", socket => {
     console.log("New Connection with ID: ", socket.id);
-    console.log(socket.handshake.decoded_token.email, "connected");
+    console.log(socket.decoded_token, "connected");
+    socket.on("disconnect", socket => {
+      console.log("User disconnected: ", socket);
+    });
   });
 };
