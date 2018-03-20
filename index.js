@@ -5,6 +5,7 @@ const morgan = require("morgan");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const config = require("./config");
+require("./util");
 const routerAPI = require("./routerAPI");
 const routerSIO = require("./routerSIO");
 

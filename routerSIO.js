@@ -4,6 +4,7 @@ const config = require("./config");
 
 module.exports = function(server) {
   const ioServer = sio(server);
+  let onlineUsers = [];
 
   ioServer.use(
     socketioJwt.authorize({
@@ -14,9 +15,15 @@ module.exports = function(server) {
 
   ioServer.on("connection", socket => {
     console.log("New Connection with ID: ", socket.id);
-    console.log(socket.decoded_token, "connected");
-    socket.on("disconnect", socket => {
-      console.log("User disconnected: ", socket);
+    socket.on("enter chat", data => {
+      socket.id = data.username;
+      console.log("User Entered: ", data.username);
+      onlineUsers.push(data.username);
+    });
+    socket.on("disconnect", () => {
+      console.log("User disconnected: ", socket.id);
+      onlineUsers = onlineUsers.remove(socket.id);
+      console.log("Users: ", onlineUsers);
     });
   });
 };
