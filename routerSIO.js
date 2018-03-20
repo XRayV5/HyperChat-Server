@@ -1,6 +1,7 @@
 const sio = require("socket.io");
 const socketioJwt = require("socketio-jwt");
 const config = require("./config");
+const { handleUserJoin, handleNewMessage } = require("./controllers/socket");
 
 module.exports = function(server) {
   const ioServer = sio(server);
@@ -14,16 +15,13 @@ module.exports = function(server) {
   );
 
   ioServer.on("connection", socket => {
-    console.log("New Connection with ID: ", socket.id);
-    socket.on("enter chat", data => {
-      socket.id = data.username;
-      console.log("User Entered: ", data.username);
-      onlineUsers.push(data.username);
-    });
+    socket.on("enter chat", handleUserJoin(socket, onlineUsers));
+    socket.on("new message", handleNewMessage(socket));
     socket.on("disconnect", () => {
       console.log("User disconnected: ", socket.id);
       onlineUsers = onlineUsers.remove(socket.id);
-      console.log("Users: ", onlineUsers);
+      socket.broadcast.emit("user left", onlineUsers);
+      console.log("Users left: ", onlineUsers);
     });
   });
 };
