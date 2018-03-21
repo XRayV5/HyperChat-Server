@@ -12,12 +12,12 @@ exports.handleUserJoin = (socket, onlineUsers) => async () => {
   socket.emit("registered", email);
   socket.broadcast.emit("new user joined", onlineUsers);
   const log = await fetchMessageLog();
-  socket.emit("update message log", log);
+  socket.emit("update message log", log.reverse());
 };
 
 exports.handleNewMessage = socket => async message => {
   console.log("New Message from ", socket.id);
-  const messageObj = await saveMessage(socket.id, message);
+  const messageObj = await saveMessage(socket.id, message, Date.now());
   if (messageObj) {
     socket.broadcast.emit("new message", messageObj);
   }

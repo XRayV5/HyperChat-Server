@@ -12,14 +12,17 @@ exports.recognizeUserConnection = async sub => {
 
 exports.fetchMessageLog = async () => {
   try {
-    return await Message.find({});
+    return await Message.find({})
+      .sort("-sentAt")
+      .limit(50)
+      .exec();
   } catch (err) {
     console.error(err);
   }
 };
 
-exports.saveMessage = async (username, message) => {
-  const newMsg = new Message({ username, message });
+exports.saveMessage = async (username, message, sentAt) => {
+  const newMsg = new Message({ username, message, sentAt });
   try {
     if (await newMsg.save()) return newMsg;
   } catch (err) {
